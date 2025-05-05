@@ -1,5 +1,6 @@
 package fioshi.com.github.SmartCash.spent.service;
 
+import fioshi.com.github.SmartCash.infra.exception.BusinessException;
 import fioshi.com.github.SmartCash.spent.domain.model.MonthlyExpense;
 import fioshi.com.github.SmartCash.spent.domain.model.Spent;
 import fioshi.com.github.SmartCash.spent.domain.dto.SpentDtoInsert;
@@ -35,7 +36,7 @@ public class SpentServiceImp implements SpentService {
     }
 
     @Override
-    @Transactional(rollbackOn = RuntimeException.class)
+    @Transactional(rollbackOn = BusinessException.class)
     public void insertSpent(SpentDtoInsert dtoInsert) {
         validation.forEach(validation -> validation.validation(dtoInsert));
 
