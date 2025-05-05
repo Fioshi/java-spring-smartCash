@@ -3,11 +3,11 @@ package fioshi.com.github.SmartCash.user.service.validation;
 import fioshi.com.github.SmartCash.user.domain.dto.UserDtoSignUp;
 import fioshi.com.github.SmartCash.user.repository.UserRepository;
 
-public class EmailValidation implements UserValidation{
+public class UserEmailValidation implements UserValidation{
 
     private final UserRepository userRepository;
 
-    public EmailValidation(UserRepository userRepository) {
+    public UserEmailValidation(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
 

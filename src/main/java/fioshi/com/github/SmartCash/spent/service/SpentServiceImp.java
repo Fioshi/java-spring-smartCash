@@ -1,6 +1,7 @@
 package fioshi.com.github.SmartCash.spent.service;
 
 import fioshi.com.github.SmartCash.infra.exception.BusinessException;
+import fioshi.com.github.SmartCash.spent.domain.dto.MonthlySpentDtoList;
 import fioshi.com.github.SmartCash.spent.domain.model.MonthlyExpense;
 import fioshi.com.github.SmartCash.spent.domain.model.Spent;
 import fioshi.com.github.SmartCash.spent.domain.dto.SpentDtoInsert;
@@ -67,5 +68,10 @@ public class SpentServiceImp implements SpentService {
                 monthlyExpenseRepository.save(monthlyExpense);
             }
         }
+    }
+
+    @Override
+    public List<MonthlySpentDtoList> listMontlhySpenceFiltered(Long id) {
+        return monthlyExpenseRepository.findAllByUserId(id).stream().map(MonthlySpentDtoList::new).toList();
     }
 }

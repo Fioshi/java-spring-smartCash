@@ -4,11 +4,11 @@ import fioshi.com.github.SmartCash.infra.exception.BusinessException;
 import fioshi.com.github.SmartCash.user.domain.dto.UserDtoSignUp;
 import fioshi.com.github.SmartCash.user.repository.UserRepository;
 
-public class CpfValidation implements UserValidation {
+public class UserCpfValidation implements UserValidation {
 
     private final UserRepository userRepository;
 
-    public CpfValidation(UserRepository userRepository) {
+    public UserCpfValidation(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
 
