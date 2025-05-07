@@ -1,6 +1,7 @@
 package fioshi.com.github.SmartCash.spent.controller;
 
 import fioshi.com.github.SmartCash.spent.domain.dto.MonthlySpentDtoList;
+import fioshi.com.github.SmartCash.spent.domain.dto.SpentDtoDetail;
 import fioshi.com.github.SmartCash.spent.domain.dto.SpentDtoInsert;
 import fioshi.com.github.SmartCash.spent.domain.dto.SpentDtoList;
 import fioshi.com.github.SmartCash.spent.domain.model.MonthlyExpense;
@@ -46,7 +47,7 @@ public class SpentController {
     }
 
     @GetMapping("transactions/detail")
-    public ResponseEntity<SpentDtoList> getSpentDetail (
+    public ResponseEntity<SpentDtoDetail> getSpentDetail (
             @RequestParam Long userId,
             @RequestParam Long spentId
     ) {

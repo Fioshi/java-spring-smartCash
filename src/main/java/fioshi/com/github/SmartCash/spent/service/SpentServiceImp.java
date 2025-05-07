@@ -2,6 +2,7 @@ package fioshi.com.github.SmartCash.spent.service;
 
 import fioshi.com.github.SmartCash.infra.exception.BusinessException;
 import fioshi.com.github.SmartCash.spent.domain.dto.MonthlySpentDtoList;
+import fioshi.com.github.SmartCash.spent.domain.dto.SpentDtoDetail;
 import fioshi.com.github.SmartCash.spent.domain.dto.SpentDtoList;
 import fioshi.com.github.SmartCash.spent.domain.model.MonthlyExpense;
 import fioshi.com.github.SmartCash.spent.domain.model.Spent;
@@ -100,10 +101,10 @@ public class SpentServiceImp implements SpentService {
     }
 
     @Override
-    public SpentDtoList getSpentDetail(Long userId ,Long spentId) {
+    public SpentDtoDetail getSpentDetail(Long userId ,Long spentId) {
         var spent = spentRepository.findByIdAndUserId(spentId, userId);
         if (spent.isPresent())
-            return new SpentDtoList(spent.get());
+            return new SpentDtoDetail(spent.get());
         throw new BusinessException("Transacao nao encontrada");
     }
 }
