@@ -29,6 +29,8 @@ public class Spent {
 
     private String item;
 
+    private boolean isMonthly;
+
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
@@ -40,5 +42,6 @@ public class Spent {
         this.place = dtoInsert.place();
         this.user = user;
         this.item = dtoInsert.item();
+        this.isMonthly = dtoInsert.isMonthly();
     }
 }

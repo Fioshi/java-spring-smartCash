@@ -57,7 +57,10 @@ public class SpentServiceImp implements SpentService {
         spentRepository.save(spent);
 
         if (spent.getInstallments() >= 1){
-            for (int i = 0; i < spent.getInstallments(); i++) {
+            var installments = spent.getInstallments();
+            if (spent.isMonthly())
+                installments = 12;
+            for (int i = 0; i < installments; i++) {
                 if (currentMonth.plus(i) == Month.JANUARY){
                     currentYear = currentYear + 1;
                 }

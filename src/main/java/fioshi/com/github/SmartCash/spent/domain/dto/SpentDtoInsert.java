@@ -16,6 +16,8 @@ public record SpentDtoInsert(
         @NotBlank
         String place,
         @NotBlank
-        String item
+        String item,
+        @NotNull
+        boolean isMonthly
 ) {
 }
