@@ -7,7 +7,8 @@ public record SpentDtoList(
         Type type,
         int installments,
         double value,
-        String place
+        String place,
+        String item
 )
 {
 
@@ -16,7 +17,8 @@ public record SpentDtoList(
                 spent.getType(),
                 spent.getInstallments(),
                 spent.getValue(),
-                spent.getPlace()
+                spent.getPlace(),
+                spent.getItem()
         );
     }
 }

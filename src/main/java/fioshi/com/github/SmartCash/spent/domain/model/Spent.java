@@ -27,6 +27,8 @@ public class Spent {
 
     private String place;
 
+    private String item;
+
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
@@ -37,5 +39,6 @@ public class Spent {
         this.value = dtoInsert.value() / dtoInsert.installments();
         this.place = dtoInsert.place();
         this.user = user;
+        this.item = dtoInsert.item();
     }
 }

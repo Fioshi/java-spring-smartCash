@@ -14,6 +14,8 @@ public record SpentDtoInsert(
         @NotNull
         double value,
         @NotBlank
-        String place
+        String place,
+        @NotBlank
+        String item
 ) {
 }

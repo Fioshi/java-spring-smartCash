@@ -1,0 +1,1 @@
+ALTER TABLE tb_spent ADD item VARCHAR(50);

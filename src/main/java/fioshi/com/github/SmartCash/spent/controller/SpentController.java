@@ -45,9 +45,12 @@ public class SpentController {
         return ResponseEntity.ok().body(spentService.getSpentResume(userId, month, year));
     }
 
-    @GetMapping("transactions/resume")
-    public ResponseEntity<SpentDtoList> getSpentDetail (@RequestParam Long spentId) {
-
+    @GetMapping("transactions/detail")
+    public ResponseEntity<SpentDtoList> getSpentDetail (
+            @RequestParam Long userId,
+            @RequestParam Long spentId
+    ) {
+        return ResponseEntity.ok().body(spentService.getSpentDetail(userId ,spentId));
     }
 
 
