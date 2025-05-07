@@ -1,0 +1,1 @@
+ALTER TABLE tb_spent ADD is_monthly TINYINT(1) NOT NULL DEFAULT 0;
