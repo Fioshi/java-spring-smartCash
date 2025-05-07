@@ -1,23 +1,27 @@
 package fioshi.com.github.SmartCash.spent.domain.dto;
 
 import fioshi.com.github.SmartCash.spent.domain.model.MonthlyExpense;
+import fioshi.com.github.SmartCash.spent.domain.model.Spent;
 
 import java.time.Month;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public record MonthlySpentDtoList(
-        Long id,
         int year,
-        Month month,
-        List<SpentDtoList> spentDtoList
+        String month,
+        List<SpentDtoList> spentDtoList,
+        double total
 
 ) {
     public MonthlySpentDtoList(MonthlyExpense monthlyExpense){
         this(
-                monthlyExpense.getId(),
                 monthlyExpense.getYear(),
-                monthlyExpense.getMonth(),
-                monthlyExpense.getSpents().stream().map(SpentDtoList::new).toList()
-        );
+                monthlyExpense.getMonth().toString(),
+                monthlyExpense.getSpents()
+                        .stream()
+                        .map(SpentDtoList::new)
+                        .toList(),
+                monthlyExpense.getSpents().stream().map(Spent::getValue).mapToDouble(Double::doubleValue).sum());
     }
 }
