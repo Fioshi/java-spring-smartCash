@@ -79,7 +79,6 @@ erDiagram
         BIGINT spent_id PK, FK
     }
 ```
-# 📘 API de Controle de Gastos
 
 ## 🔗 Endpoints
 
