@@ -53,8 +53,8 @@ erDiagram
         BIGINT id PK
         VARCHAR nome
         VARCHAR surname
-        VARCHAR cpf UNIQUE
-        VARCHAR email UNIQUE
+        VARCHAR cpf "UNIQUE"
+        VARCHAR email "UNIQUE"
         VARCHAR password
     }
 
