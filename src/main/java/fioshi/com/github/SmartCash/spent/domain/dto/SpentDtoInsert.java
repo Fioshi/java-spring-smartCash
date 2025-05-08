@@ -9,7 +9,6 @@ public record SpentDtoInsert(
         Long idUser,
         @NotNull
         Type typeSpent,
-        @NotNull
         int  installments,
         @NotNull
         double value,

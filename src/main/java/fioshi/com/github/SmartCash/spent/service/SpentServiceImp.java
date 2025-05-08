@@ -3,11 +3,9 @@ package fioshi.com.github.SmartCash.spent.service;
 import fioshi.com.github.SmartCash.infra.exception.BusinessException;
 import fioshi.com.github.SmartCash.spent.domain.dto.MonthlySpentDtoList;
 import fioshi.com.github.SmartCash.spent.domain.dto.SpentDtoDetail;
-import fioshi.com.github.SmartCash.spent.domain.dto.SpentDtoList;
 import fioshi.com.github.SmartCash.spent.domain.model.MonthlyExpense;
 import fioshi.com.github.SmartCash.spent.domain.model.Spent;
 import fioshi.com.github.SmartCash.spent.domain.dto.SpentDtoInsert;
-import fioshi.com.github.SmartCash.spent.domain.model.Type;
 import fioshi.com.github.SmartCash.spent.repository.MonthlyExpenseRepository;
 import fioshi.com.github.SmartCash.spent.repository.SpentRepository;
 import fioshi.com.github.SmartCash.spent.service.validacao.SpentValidation;
@@ -44,44 +42,40 @@ public class SpentServiceImp implements SpentService {
     @Override
     @Transactional(rollbackOn = BusinessException.class)
     public void insertSpent(SpentDtoInsert dtoInsert) {
-        validation.forEach(validation -> validation.validation(dtoInsert));
 
-        var user = userRepository.getReferenceById(dtoInsert.idUser());
+        validation.forEach(validation -> validation.validation(dtoInsert));
 
         var currentMonth = LocalDate.now().getMonth();
         var currentYear = Year.now().getValue();
-
+        var user = userRepository.findById(dtoInsert.idUser()).orElseThrow(() -> new BusinessException("Usuário não encontrado"));
         var monthlyExpenses = monthlyExpenseRepository.findAllByUserId(dtoInsert.idUser());
         var spent = new Spent(dtoInsert, user);
 
         spentRepository.save(spent);
 
-        if (spent.getInstallments() >= 1){
-            var installments = spent.getInstallments();
-            if (spent.isMonthly())
-                installments = 12;
-            for (int i = 0; i < installments; i++) {
-                if (currentMonth.plus(i) == Month.JANUARY){
-                    currentYear = currentYear + 1;
-                }
+        int count = spent.isMonthly() ? monthlyExpenses.size() : spent.getInstallments();
 
-                int finalI = i;
-                int finalCurrentYear = currentYear;
+        for (int i = 0; i < count; i++) {
+            if (currentMonth.plus(i) == Month.JANUARY) {
+                currentYear = currentYear + 1;
+            }
 
-                var optionalMonthlyExpense = monthlyExpenses
-                        .stream()
-                        .filter(month -> month.getMonth() == currentMonth.plus(finalI)
-                                && month.getYear() == finalCurrentYear)
-                        .findFirst();
+            int finalI = i;
+            int finalCurrentYear = currentYear;
 
-                var monthlyExpense = optionalMonthlyExpense.orElseGet(
-                     () -> new MonthlyExpense(
+            var optionalMonthlyExpense = monthlyExpenses
+                    .stream()
+                    .filter(month -> month.getMonth() == currentMonth.plus(finalI)
+                            && month.getYear() == finalCurrentYear)
+                    .findFirst();
+
+            var monthlyExpense = optionalMonthlyExpense.orElseGet(
+                    () -> new MonthlyExpense(
                             finalCurrentYear, currentMonth.plus(finalI), new LinkedList<>(), user
                     )
             );
-                monthlyExpense.addSpent(spent);
-                monthlyExpenseRepository.save(monthlyExpense);
-            }
+            monthlyExpense.addSpent(spent);
+            monthlyExpenseRepository.save(monthlyExpense);
         }
     }
 
@@ -104,7 +98,7 @@ public class SpentServiceImp implements SpentService {
     }
 
     @Override
-    public SpentDtoDetail getSpentDetail(Long userId ,Long spentId) {
+    public SpentDtoDetail getSpentDetail(Long userId, Long spentId) {
         var spent = spentRepository.findByIdAndUserId(spentId, userId);
         if (spent.isPresent())
             return new SpentDtoDetail(spent.get());

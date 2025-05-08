@@ -6,7 +6,7 @@ import fioshi.com.github.SmartCash.spent.domain.dto.SpentDtoInsert;
 public class ValueValidation implements SpentValidation{
     @Override
     public void validation(SpentDtoInsert dtoInsert) {
-        if (dtoInsert.value() <= 0)
+        if (dtoInsert.value() <= 0 && !dtoInsert.isMonthly())
             throw new BusinessException("O valor precisa ser valido");
     }
 }

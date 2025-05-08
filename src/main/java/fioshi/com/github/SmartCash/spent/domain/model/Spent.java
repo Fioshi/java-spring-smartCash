@@ -2,6 +2,7 @@ package fioshi.com.github.SmartCash.spent.domain.model;
 
 import fioshi.com.github.SmartCash.user.domain.model.User;
 import fioshi.com.github.SmartCash.spent.domain.dto.SpentDtoInsert;
+import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -37,8 +38,14 @@ public class Spent {
 
     public Spent(SpentDtoInsert dtoInsert, User user) {
         this.type = dtoInsert.typeSpent();
-        this.installments = dtoInsert.installments();
-        this.value = dtoInsert.value() / dtoInsert.installments();
+
+        if (!dtoInsert.isMonthly()) {
+            this.installments = dtoInsert.installments();
+            this.value = dtoInsert.value() / dtoInsert.installments();
+        } else {
+            this.value = dtoInsert.value();
+        }
+
         this.place = dtoInsert.place();
         this.user = user;
         this.item = dtoInsert.item();

@@ -10,7 +10,7 @@ CREATE TABLE tb_user (
 CREATE TABLE tb_spent (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     type ENUM('CREDIT', 'DEBIT', 'PIX', 'INSTALLMENTS') NOT NULL,
-    installments INT NOT NULL,
+    installments INT,
     value DOUBLE NOT NULL,
     place VARCHAR(255),
     user_id BIGINT,
