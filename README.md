@@ -20,6 +20,14 @@ Este repositório contém a API do **SmartCash**, um sistema de controle finance
 As migrações SQL são aplicadas automaticamente ao subir a aplicação. As versões estão localizadas em:  
 `src/main/resources/db/migration`
 
+## 📁 Documentação da API (Swagger)
+
+Após rodar a aplicação, acesse a URL:
+
+```bash
+http://localhost:8080/swagger-ui/index.html
+```
+
 ---
 
 ## 🚀 Como executar localmente
