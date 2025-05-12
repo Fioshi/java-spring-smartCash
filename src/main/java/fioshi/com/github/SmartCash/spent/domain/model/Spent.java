@@ -28,6 +28,9 @@ public class Spent {
 
     private String place;
 
+    @Enumerated(EnumType.STRING)
+    private SpentCategorie categorie;
+
     private String item;
 
     private boolean isMonthly;
@@ -39,16 +42,16 @@ public class Spent {
     public Spent(SpentDtoInsert dtoInsert, User user) {
         this.type = dtoInsert.typeSpent();
 
-        if (!dtoInsert.isMonthly()) {
+        if (!dtoInsert.categorie().isRecurring()) {
             this.installments = dtoInsert.installments();
             this.value = dtoInsert.value() / dtoInsert.installments();
         } else {
             this.value = dtoInsert.value();
         }
-
+        this.categorie = dtoInsert.categorie();
         this.place = dtoInsert.place();
         this.user = user;
         this.item = dtoInsert.item();
-        this.isMonthly = dtoInsert.isMonthly();
+        this.isMonthly = dtoInsert.categorie().isRecurring();
     }
 }

@@ -2,10 +2,12 @@ package fioshi.com.github.SmartCash.spent.service;
 
 import fioshi.com.github.SmartCash.infra.exception.BusinessException;
 import fioshi.com.github.SmartCash.spent.domain.dto.MonthlySpentDtoList;
+import fioshi.com.github.SmartCash.spent.domain.dto.SpentCategorieDtoList;
 import fioshi.com.github.SmartCash.spent.domain.dto.SpentDtoDetail;
 import fioshi.com.github.SmartCash.spent.domain.model.MonthlyExpense;
 import fioshi.com.github.SmartCash.spent.domain.model.Spent;
 import fioshi.com.github.SmartCash.spent.domain.dto.SpentDtoInsert;
+import fioshi.com.github.SmartCash.spent.domain.model.SpentCategorie;
 import fioshi.com.github.SmartCash.spent.repository.MonthlyExpenseRepository;
 import fioshi.com.github.SmartCash.spent.repository.SpentRepository;
 import fioshi.com.github.SmartCash.spent.service.validacao.SpentValidation;
@@ -16,6 +18,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.Month;
 import java.time.Year;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -47,36 +50,60 @@ public class SpentServiceImp implements SpentService {
 
         var currentMonth = LocalDate.now().getMonth();
         var currentYear = Year.now().getValue();
-        var user = userRepository.findById(dtoInsert.idUser()).orElseThrow(() -> new BusinessException("Usuário não encontrado"));
-        var monthlyExpenses = monthlyExpenseRepository.findAllByUserId(dtoInsert.idUser());
-        var spent = new Spent(dtoInsert, user);
 
-        spentRepository.save(spent);
+        var user = userRepository.findById(dtoInsert.idUser())
+                .orElseThrow(() -> new BusinessException("Usuário não encontrado"));
 
-        int count = spent.isMonthly() ? monthlyExpenses.size() : spent.getInstallments();
+        var existingMonthlyExpenses = monthlyExpenseRepository
+                .findAllByUserId(dtoInsert.idUser());
 
-        for (int i = 0; i < count; i++) {
+        var recurringSpents = spentRepository
+                .findAllByUserIdAndIsMonthlyTrue(dtoInsert.idUser());
+
+        var newSpent = new Spent(dtoInsert, user);
+
+        spentRepository.save(newSpent);
+
+        int monthsToProcess = newSpent.isMonthly()
+                ? existingMonthlyExpenses.size()
+                : newSpent.getInstallments();
+
+        for (int i = 0; i < monthsToProcess; i++) {
             if (currentMonth.plus(i) == Month.JANUARY) {
                 currentYear = currentYear + 1;
             }
 
-            int finalI = i;
-            int finalCurrentYear = currentYear;
+            int monthOffset = i;
+            int targetYear = currentYear;
 
-            var optionalMonthlyExpense = monthlyExpenses
+            var optionalMonthlyExpense = existingMonthlyExpenses
                     .stream()
-                    .filter(month -> month.getMonth() == currentMonth.plus(finalI)
-                            && month.getYear() == finalCurrentYear)
+                    .filter(expense -> expense.getMonth() == currentMonth.plus(monthOffset)
+                            && expense.getYear() == targetYear)
                     .findFirst();
 
-            var monthlyExpense = optionalMonthlyExpense.orElseGet(
-                    () -> new MonthlyExpense(
-                            finalCurrentYear, currentMonth.plus(finalI), new LinkedList<>(), user
+            var targetMonthlyExpense = optionalMonthlyExpense.orElseGet(() ->
+                    new MonthlyExpense(
+                            targetYear,
+                            currentMonth.plus(monthOffset),
+                            new LinkedList<>(),
+                            user
                     )
             );
-            monthlyExpense.addSpent(spent);
-            monthlyExpenseRepository.save(monthlyExpense);
+
+            existingMonthlyExpenses.add(targetMonthlyExpense);
+
+            targetMonthlyExpense.addSpent(newSpent);
+            monthlyExpenseRepository.save(targetMonthlyExpense);
         }
+
+        recurringSpents.forEach(recurring -> {
+            existingMonthlyExpenses.forEach(monthlyExpense -> {
+                if (!monthlyExpense.getSpents().contains(recurring)) {
+                    monthlyExpense.addSpent(recurring);
+                }
+            });
+        });
     }
 
     @Override
@@ -103,5 +130,10 @@ public class SpentServiceImp implements SpentService {
         if (spent.isPresent())
             return new SpentDtoDetail(spent.get());
         throw new BusinessException("Transacao nao encontrada");
+    }
+
+    @Override
+    public List<SpentCategorieDtoList> getCategories() {
+        return Arrays.stream(SpentCategorie.values()).map(SpentCategorieDtoList::new).toList();
     }
 }
