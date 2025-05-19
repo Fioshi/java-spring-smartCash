@@ -1,5 +1,6 @@
 package fioshi.com.github.SmartCash.spent.domain.dto;
 
+import fioshi.com.github.SmartCash.spent.domain.model.SpentCategorie;
 import fioshi.com.github.SmartCash.spent.domain.model.Type;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -9,6 +10,7 @@ public record SpentDtoInsert(
         Long idUser,
         @NotNull
         Type typeSpent,
+
         int  installments,
         @NotNull
         double value,
@@ -17,6 +19,6 @@ public record SpentDtoInsert(
         @NotBlank
         String item,
         @NotNull
-        boolean isMonthly
+        SpentCategorie categorie
 ) {
 }

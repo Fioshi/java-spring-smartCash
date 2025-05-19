@@ -1,9 +1,6 @@
 package fioshi.com.github.SmartCash.spent.controller;
 
-import fioshi.com.github.SmartCash.spent.domain.dto.MonthlySpentDtoList;
-import fioshi.com.github.SmartCash.spent.domain.dto.SpentDtoDetail;
-import fioshi.com.github.SmartCash.spent.domain.dto.SpentDtoInsert;
-import fioshi.com.github.SmartCash.spent.domain.dto.SpentDtoList;
+import fioshi.com.github.SmartCash.spent.domain.dto.*;
 import fioshi.com.github.SmartCash.spent.domain.model.MonthlyExpense;
 import fioshi.com.github.SmartCash.spent.service.SpentService;
 import org.springframework.http.ResponseEntity;
@@ -54,6 +51,11 @@ public class SpentController {
         return ResponseEntity.ok().body(spentService.getSpentDetail(userId ,spentId));
     }
 
+
+    @GetMapping("transactions/categories")
+    public ResponseEntity<List<SpentCategorieDtoList>> getCategories(){
+        return ResponseEntity.ok().body(spentService.getCategories());
+    }
 
 
 }
