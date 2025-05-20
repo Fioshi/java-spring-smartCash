@@ -6,9 +6,12 @@ import fioshi.com.github.SmartCash.spent.service.SpentService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.time.Month;
 import java.util.List;
+
+import static org.springframework.data.jpa.domain.AbstractPersistable_.id;
 
 @RestController
 @RequestMapping("api/spent")
@@ -16,16 +19,24 @@ public class SpentController {
 
     private final SpentService spentService;
 
-    public SpentController(SpentService spentService) {
+    public SpentController(SpentService spentService)
+    {
         this.spentService = spentService;
     }
 
     @PostMapping("transactions")
-    private ResponseEntity<String> insertSpent(
-            @RequestBody @Valid SpentDtoInsert dtoInsert
+    private ResponseEntity<SpentDtoDetail> insertSpent(
+            @RequestBody @Valid SpentDtoInsert dtoInsert,
+            UriComponentsBuilder uriBuilder
     ){
-        spentService.insertSpent(dtoInsert);
-        return ResponseEntity.ok("Cadastrado com sucesso");
+        var spent = spentService.insertSpent(dtoInsert);
+
+        var uri = uriBuilder
+                .path("api/spents/transactions/{id}")
+                .buildAndExpand(spent.getInstallments())
+                .toUri();
+
+        return ResponseEntity.created(uri).body(new SpentDtoDetail(spent));
     }
 
     @GetMapping("transactions")
@@ -54,7 +65,8 @@ public class SpentController {
 
 
     @GetMapping("transactions/categories")
-    public ResponseEntity<List<SpentCategorieDtoList>> getCategories(){
+    public ResponseEntity<List<SpentCategorieDtoList>> getCategories()
+    {
         return ResponseEntity.ok().body(spentService.getCategories());
     }
 
@@ -65,6 +77,14 @@ public class SpentController {
     ){
         var spent = spentService.updateSpent(id, dtoUpdate);
         return ResponseEntity.ok().body("FoiFoi");
+    }
+
+    @DeleteMapping("transactions/delete/{id}")
+    public ResponseEntity<String> deleteSpent(
+            @PathVariable Long id
+    ){
+        spentService.deleteSpent(id);
+        return ResponseEntity.noContent().build();
     }
 
 }

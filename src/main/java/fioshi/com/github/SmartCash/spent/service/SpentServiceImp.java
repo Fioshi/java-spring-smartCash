@@ -41,7 +41,7 @@ public class SpentServiceImp implements SpentService {
 
     @Override
     @Transactional(rollbackOn = BusinessException.class)
-    public void insertSpent(SpentDtoInsert dtoInsert) {
+    public Spent insertSpent(SpentDtoInsert dtoInsert) {
 
         validation.forEach(validation -> validation.validation(dtoInsert));
 
@@ -101,6 +101,7 @@ public class SpentServiceImp implements SpentService {
                 }
             });
         });
+        return newSpent;
     }
 
     @Override
@@ -152,5 +153,13 @@ public class SpentServiceImp implements SpentService {
         spent.update(dtoUpdate);
         spentRepository.save(spent);
         return new SpentDtoDetail(spent);
+    }
+
+    @Override
+    @Transactional(rollbackOn = BusinessException.class )
+    public void deleteSpent(Long id) {
+        var spent = spentRepository.findById(id).orElseThrow(
+                () -> new BusinessException("Gasto nao encontrado"));
+        spentRepository.delete(spent);
     }
 }

@@ -9,10 +9,11 @@ import java.util.List;
 
 public interface SpentService {
 
-    void insertSpent(SpentDtoInsert dtoInsert );
+    Spent insertSpent(SpentDtoInsert dtoInsert );
     List<MonthlySpentDtoList> listMontlhySpenceFiltered(Long id);
     MonthlySpentDtoList getSpentResume(Long userId, Month month, int year);
     SpentDtoDetail getSpentDetail (Long userId , Long spentId);
     List<SpentCategorieDtoList> getCategories();
     SpentDtoDetail updateSpent(Long id ,SpentDtoUpdate dtoUpdate);
+    void deleteSpent(Long id);
 }
