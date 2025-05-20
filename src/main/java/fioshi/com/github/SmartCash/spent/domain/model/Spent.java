@@ -1,5 +1,6 @@
 package fioshi.com.github.SmartCash.spent.domain.model;
 
+import fioshi.com.github.SmartCash.spent.domain.dto.SpentDtoUpdate;
 import fioshi.com.github.SmartCash.user.domain.model.User;
 import fioshi.com.github.SmartCash.spent.domain.dto.SpentDtoInsert;
 import jakarta.annotation.Nullable;
@@ -41,7 +42,6 @@ public class Spent {
 
     public Spent(SpentDtoInsert dtoInsert, User user) {
         this.type = dtoInsert.typeSpent();
-
         if (!dtoInsert.categorie().isRecurring()) {
             this.installments = dtoInsert.installments();
             this.value = dtoInsert.value() / dtoInsert.installments();
@@ -53,5 +53,22 @@ public class Spent {
         this.user = user;
         this.item = dtoInsert.item();
         this.isMonthly = dtoInsert.categorie().isRecurring();
+    }
+
+    public void update(SpentDtoUpdate dtoUpdate) {
+        if (dtoUpdate.categorie() != null)
+            this.categorie = dtoUpdate.categorie();
+        if (dtoUpdate.place() != null)
+            this.place = dtoUpdate.place();
+        if (dtoUpdate.item() != null)
+            this.item = dtoUpdate.item();
+        if (dtoUpdate.typeSpent() != null)
+            this.type = dtoUpdate.typeSpent();
+        if (!dtoUpdate.categorie().isRecurring()) {
+            this.installments = dtoUpdate.installments();
+            this.value = dtoUpdate.value() / dtoUpdate.installments();
+        } else {
+            this.value = dtoUpdate.value();
+        }
     }
 }

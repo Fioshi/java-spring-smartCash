@@ -1,12 +1,9 @@
 package fioshi.com.github.SmartCash.spent.service;
 
 import fioshi.com.github.SmartCash.infra.exception.BusinessException;
-import fioshi.com.github.SmartCash.spent.domain.dto.MonthlySpentDtoList;
-import fioshi.com.github.SmartCash.spent.domain.dto.SpentCategorieDtoList;
-import fioshi.com.github.SmartCash.spent.domain.dto.SpentDtoDetail;
+import fioshi.com.github.SmartCash.spent.domain.dto.*;
 import fioshi.com.github.SmartCash.spent.domain.model.MonthlyExpense;
 import fioshi.com.github.SmartCash.spent.domain.model.Spent;
-import fioshi.com.github.SmartCash.spent.domain.dto.SpentDtoInsert;
 import fioshi.com.github.SmartCash.spent.domain.model.SpentCategorie;
 import fioshi.com.github.SmartCash.spent.repository.MonthlyExpenseRepository;
 import fioshi.com.github.SmartCash.spent.repository.SpentRepository;
@@ -135,5 +132,25 @@ public class SpentServiceImp implements SpentService {
     @Override
     public List<SpentCategorieDtoList> getCategories() {
         return Arrays.stream(SpentCategorie.values()).map(SpentCategorieDtoList::new).toList();
+    }
+
+    @Override
+    @Transactional(rollbackOn = BusinessException.class)
+    public SpentDtoDetail updateSpent(Long id, SpentDtoUpdate dtoUpdate) {
+        var spent = spentRepository.findById(id).orElseThrow(
+                () -> new BusinessException("Transacao nao encontrada")
+        );
+
+        var monthList = monthlyExpenseRepository.findAllBySpents_Id(id);
+
+        if (dtoUpdate.installments() < monthList.size()) {
+            for (int i = dtoUpdate.installments(); i < monthList.size(); i++) {
+                monthList.get(i).removeSpent(spent);
+            }
+        }
+
+        spent.update(dtoUpdate);
+        spentRepository.save(spent);
+        return new SpentDtoDetail(spent);
     }
 }

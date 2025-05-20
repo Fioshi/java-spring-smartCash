@@ -19,7 +19,7 @@ public class SpentController {
         this.spentService = spentService;
     }
 
-    @PostMapping
+    @PostMapping("transactions")
     private ResponseEntity<String> insertSpent(
             @RequestBody SpentDtoInsert dtoInsert
     ){
@@ -57,5 +57,13 @@ public class SpentController {
         return ResponseEntity.ok().body(spentService.getCategories());
     }
 
+    @PatchMapping("transactions/update/{id}")
+    public ResponseEntity<String> updateSpent(
+            @PathVariable Long id,
+            @RequestBody SpentDtoUpdate dtoUpdate
+    ){
+        var spent = spentService.updateSpent(id, dtoUpdate);
+        return ResponseEntity.ok().body("FoiFoi");
+    }
 
 }

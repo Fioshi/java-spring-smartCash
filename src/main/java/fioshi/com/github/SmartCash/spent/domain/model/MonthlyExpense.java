@@ -45,6 +45,10 @@ public class MonthlyExpense {
         this.spents.add(spent);
     }
 
+    public void removeSpent(Spent spent){
+        this.spents.remove(spent);
+    }
+
     public MonthlyExpense(int year, Month month, List<Spent> spents, User user) {
         this.year = year;
         this.month = month;
