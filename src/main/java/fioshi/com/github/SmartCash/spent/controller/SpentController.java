@@ -3,6 +3,7 @@ package fioshi.com.github.SmartCash.spent.controller;
 import fioshi.com.github.SmartCash.spent.domain.dto.*;
 import fioshi.com.github.SmartCash.spent.domain.model.MonthlyExpense;
 import fioshi.com.github.SmartCash.spent.service.SpentService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,7 +22,7 @@ public class SpentController {
 
     @PostMapping("transactions")
     private ResponseEntity<String> insertSpent(
-            @RequestBody SpentDtoInsert dtoInsert
+            @RequestBody @Valid SpentDtoInsert dtoInsert
     ){
         spentService.insertSpent(dtoInsert);
         return ResponseEntity.ok("Cadastrado com sucesso");
@@ -60,7 +61,7 @@ public class SpentController {
     @PatchMapping("transactions/update/{id}")
     public ResponseEntity<String> updateSpent(
             @PathVariable Long id,
-            @RequestBody SpentDtoUpdate dtoUpdate
+            @RequestBody @Valid SpentDtoUpdate dtoUpdate
     ){
         var spent = spentService.updateSpent(id, dtoUpdate);
         return ResponseEntity.ok().body("FoiFoi");

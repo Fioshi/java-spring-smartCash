@@ -42,17 +42,12 @@ public class Spent {
 
     public Spent(SpentDtoInsert dtoInsert, User user) {
         this.type = dtoInsert.typeSpent();
-        if (!dtoInsert.categorie().isRecurring()) {
-            this.installments = dtoInsert.installments();
-            this.value = dtoInsert.value() / dtoInsert.installments();
-        } else {
-            this.value = dtoInsert.value();
-        }
         this.categorie = dtoInsert.categorie();
         this.place = dtoInsert.place();
         this.user = user;
         this.item = dtoInsert.item();
         this.isMonthly = dtoInsert.categorie().isRecurring();
+        checkIsCurrent(dtoInsert.categorie(), dtoInsert.installments(), dtoInsert.value());
     }
 
     public void update(SpentDtoUpdate dtoUpdate) {
@@ -64,11 +59,15 @@ public class Spent {
             this.item = dtoUpdate.item();
         if (dtoUpdate.typeSpent() != null)
             this.type = dtoUpdate.typeSpent();
-        if (!dtoUpdate.categorie().isRecurring()) {
-            this.installments = dtoUpdate.installments();
-            this.value = dtoUpdate.value() / dtoUpdate.installments();
+        checkIsCurrent(dtoUpdate.categorie(), dtoUpdate.installments(), dtoUpdate.value());
+    }
+
+    private void checkIsCurrent(SpentCategorie categorie, int installments, double value){
+        if (!categorie.isRecurring()) {
+            this.installments = installments;
+            this.value = value / installments;
         } else {
-            this.value = dtoUpdate.value();
+            this.value = value;
         }
     }
 }
