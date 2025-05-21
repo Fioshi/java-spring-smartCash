@@ -22,12 +22,13 @@ public class UserServiceImp implements UserService{
     }
 
     @Override
-    public void signUp(UserDtoSignUp dtoSignUp) {
+    public User signUp(UserDtoSignUp dtoSignUp) {
 
         userValidations.forEach(userValidation -> userValidation.validar(dtoSignUp));
 
         var user = new User(dtoSignUp);
         userRepository.save(user);
+        return user;
     }
 
     @Override
