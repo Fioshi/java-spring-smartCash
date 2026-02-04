@@ -26,17 +26,20 @@ public class SpentServiceImp implements SpentService {
     private final UserRepository userRepository;
     private final MonthlyExpenseRepository monthlyExpenseRepository;
     private final List<SpentValidation> validation;
+    private final PdfExportService pdfExportService;
 
     public SpentServiceImp(
             SpentRepository spentRepository,
             UserRepository userRepository,
             MonthlyExpenseRepository monthlyExpenseRepository,
-            List<SpentValidation> validation
+            List<SpentValidation> validation,
+            PdfExportService pdfExportService
     ) {
         this.spentRepository = spentRepository;
         this.userRepository = userRepository;
         this.monthlyExpenseRepository = monthlyExpenseRepository;
         this.validation = validation;
+        this.pdfExportService = pdfExportService;
     }
 
     @Override
@@ -161,5 +164,29 @@ public class SpentServiceImp implements SpentService {
         var spent = spentRepository.findById(id).orElseThrow(
                 () -> new BusinessException("Gasto nao encontrado"));
         spentRepository.delete(spent);
+    }
+
+    @Override
+    public byte[] exportAllMonthsToPdf(Long userId) {
+        var user = userRepository.findById(userId).orElseThrow(
+                () -> new BusinessException("Usuario nao encontrado"));
+        
+        var monthlyExpenses = listMontlhySpenceFiltered(userId);
+        
+        if (monthlyExpenses.isEmpty()) {
+            throw new BusinessException("Nenhum gasto encontrado para este usuario");
+        }
+        
+        return pdfExportService.exportMonthlyExpensesToPdf(monthlyExpenses, user);
+    }
+
+    @Override
+    public byte[] exportSingleMonthToPdf(Long userId, Month month, int year) {
+        var user = userRepository.findById(userId).orElseThrow(
+                () -> new BusinessException("Usuario nao encontrado"));
+        
+        var monthlyExpense = getSpentResume(userId, month, year);
+        
+        return pdfExportService.exportSingleMonthToPdf(monthlyExpense, user);
     }
 }

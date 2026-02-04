@@ -16,4 +16,6 @@ public interface SpentService {
     List<SpentCategorieDtoList> getCategories();
     SpentDtoDetail updateSpent(Long id ,SpentDtoUpdate dtoUpdate);
     void deleteSpent(Long id);
+    byte[] exportAllMonthsToPdf(Long userId);
+    byte[] exportSingleMonthToPdf(Long userId, Month month, int year);
 }

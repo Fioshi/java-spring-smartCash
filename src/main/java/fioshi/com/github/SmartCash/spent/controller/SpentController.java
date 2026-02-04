@@ -87,4 +87,32 @@ public class SpentController {
         return ResponseEntity.noContent().build();
     }
 
+    @GetMapping("transactions/export/pdf")
+    public ResponseEntity<byte[]> exportAllMonthsToPdf(
+            @RequestParam Long userId
+    ) {
+        byte[] pdfBytes = spentService.exportAllMonthsToPdf(userId);
+        
+        return ResponseEntity.ok()
+                .header("Content-Type", "application/pdf")
+                .header("Content-Disposition", "attachment; filename=gastos-completo.pdf")
+                .body(pdfBytes);
+    }
+
+    @GetMapping("transactions/export/pdf/month")
+    public ResponseEntity<byte[]> exportSingleMonthToPdf(
+            @RequestParam Long userId,
+            @RequestParam Month month,
+            @RequestParam int year
+    ) {
+        byte[] pdfBytes = spentService.exportSingleMonthToPdf(userId, month, year);
+        
+        String filename = String.format("gastos-%s-%d.pdf", month.toString().toLowerCase(), year);
+        
+        return ResponseEntity.ok()
+                .header("Content-Type", "application/pdf")
+                .header("Content-Disposition", "attachment; filename=" + filename)
+                .body(pdfBytes);
+    }
+
 }
