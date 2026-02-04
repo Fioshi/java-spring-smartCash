@@ -19,9 +19,11 @@ public class MonthlyExpense {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "expense_year")
     private int year;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "month_name")
     private Month month;
 
     @ManyToMany

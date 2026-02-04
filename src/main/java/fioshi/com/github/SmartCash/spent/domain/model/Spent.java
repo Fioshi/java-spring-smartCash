@@ -25,6 +25,7 @@ public class Spent {
 
     private int installments;
 
+    @Column(name = "spent_value")
     private double value;
 
     private String place;
