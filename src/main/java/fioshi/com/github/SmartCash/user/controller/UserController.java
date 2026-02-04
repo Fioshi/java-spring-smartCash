@@ -21,7 +21,7 @@ public class UserController {
     }
 
     @PostMapping("/signup")
-    private ResponseEntity<UserDtoDetail> signUp (
+    public ResponseEntity<UserDtoDetail> signUp (
             @RequestBody UserDtoSignUp dtoSignUp,
             UriComponentsBuilder uriBuilder
     ){
@@ -33,11 +33,6 @@ public class UserController {
                 .toUri();
 
         return ResponseEntity.created(uri).body(new UserDtoDetail(user));
-    }
-
-    @PostMapping("/singin")
-    private ResponseEntity<String> singIn (){
-        return ResponseEntity.ok("Login efetuado com sucesso");
     }
 
 }

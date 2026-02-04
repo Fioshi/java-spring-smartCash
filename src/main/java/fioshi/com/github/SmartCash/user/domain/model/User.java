@@ -40,4 +40,12 @@ public class User {
         this.email = dtoSignUp.email();
         this.password = dtoSignUp.password();
     }
+
+    public User(UserDtoSignUp dtoSignUp, String encodedPassword) {
+        this.nome = dtoSignUp.name();
+        this.surname = dtoSignUp.surname();
+        this.cpf = dtoSignUp.cpf();
+        this.email = dtoSignUp.email();
+        this.password = encodedPassword;
+    }
 }
