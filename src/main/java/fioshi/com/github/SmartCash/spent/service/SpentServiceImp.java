@@ -5,6 +5,7 @@ import fioshi.com.github.SmartCash.spent.domain.dto.*;
 import fioshi.com.github.SmartCash.spent.domain.model.MonthlyExpense;
 import fioshi.com.github.SmartCash.spent.domain.model.Spent;
 import fioshi.com.github.SmartCash.spent.domain.model.SpentCategorie;
+import fioshi.com.github.SmartCash.spent.repository.AdditionalIncomeRepository;
 import fioshi.com.github.SmartCash.spent.repository.MonthlyExpenseRepository;
 import fioshi.com.github.SmartCash.spent.repository.SpentRepository;
 import fioshi.com.github.SmartCash.spent.service.validacao.SpentValidation;
@@ -27,19 +28,22 @@ public class SpentServiceImp implements SpentService {
     private final MonthlyExpenseRepository monthlyExpenseRepository;
     private final List<SpentValidation> validation;
     private final PdfExportService pdfExportService;
+    private final AdditionalIncomeRepository additionalIncomeRepository;
 
     public SpentServiceImp(
             SpentRepository spentRepository,
             UserRepository userRepository,
             MonthlyExpenseRepository monthlyExpenseRepository,
             List<SpentValidation> validation,
-            PdfExportService pdfExportService
+            PdfExportService pdfExportService,
+            AdditionalIncomeRepository additionalIncomeRepository
     ) {
         this.spentRepository = spentRepository;
         this.userRepository = userRepository;
         this.monthlyExpenseRepository = monthlyExpenseRepository;
         this.validation = validation;
         this.pdfExportService = pdfExportService;
+        this.additionalIncomeRepository = additionalIncomeRepository;
     }
 
     @Override
@@ -117,7 +121,15 @@ public class SpentServiceImp implements SpentService {
         return monthlyExpenseRepository
                 .findAllByUserId(id)
                 .stream()
-                .map(monthlyExpense -> new MonthlySpentDtoList(monthlyExpense, salarioMensal))
+                .map(monthlyExpense -> {
+                    double additionalIncome = additionalIncomeRepository
+                            .findByUserIdAndAnoAndMes(id, monthlyExpense.getYear(), monthlyExpense.getMonth())
+                            .stream()
+                            .mapToDouble(ai -> ai.getValor())
+                            .sum();
+                    
+                    return new MonthlySpentDtoList(monthlyExpense, salarioMensal, additionalIncome);
+                })
                 .toList();
     }
 
@@ -129,9 +141,15 @@ public class SpentServiceImp implements SpentService {
         
         double salarioMensal = user.getSalarioMensal() != null ? user.getSalarioMensal() : 0.0;
         
+        double additionalIncome = additionalIncomeRepository
+                .findByUserIdAndAnoAndMes(userId, year, month)
+                .stream()
+                .mapToDouble(ai -> ai.getValor())
+                .sum();
+        
         var monthlyExpense = monthlyExpenseRepository.findByUserIdAndMonthAndYear(userId, month, year);
         if (monthlyExpense.isPresent())
-            return new MonthlySpentDtoList(monthlyExpense.get(), salarioMensal);
+            return new MonthlySpentDtoList(monthlyExpense.get(), salarioMensal, additionalIncome);
         throw new BusinessException("Nao ha registros desse mes para esse usuario");
     }
 

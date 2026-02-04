@@ -114,6 +114,16 @@ public class PdfExportService {
                 .setMarginBottom(10);
         document.add(monthTitle);
 
+        if (monthlyExpense.rendimentosExtras() > 0) {
+            Paragraph rendimentosInfo = new Paragraph(String.format("Rendimentos Extras: R$ %.2f", 
+                    monthlyExpense.rendimentosExtras()))
+                    .setFontSize(11)
+                    .setItalic()
+                    .setFontColor(new DeviceRgb(46, 204, 113))
+                    .setMarginBottom(5);
+            document.add(rendimentosInfo);
+        }
+
         
         float[] columnWidths = {2, 1, 1, 1, 3};
         Table table = new Table(UnitValue.createPercentArray(columnWidths))
@@ -257,10 +267,18 @@ public class PdfExportService {
 
         document.add(categoryTable);
         
-        document.add(new Paragraph(String.format("\nSaldo Restante: R$ %.2f", monthlyExpense.saldoRestante()))
+        if (monthlyExpense.rendimentosExtras() > 0) {
+            document.add(new Paragraph(String.format("\nRendimentos Extras: R$ %.2f", monthlyExpense.rendimentosExtras()))
+                    .setFontSize(12)
+                    .setBold()
+                    .setFontColor(new DeviceRgb(46, 204, 113))
+                    .setMarginTop(10));
+        }
+        
+        document.add(new Paragraph(String.format("Saldo Restante: R$ %.2f", monthlyExpense.saldoRestante()))
                 .setFontSize(12)
                 .setBold()
-                .setMarginTop(10));
+                .setMarginTop(5));
     }
 
     private void addGeneralSummary(Document document, List<MonthlySpentDtoList> monthlyExpenses) {
@@ -320,6 +338,15 @@ public class PdfExportService {
 
         summaryTable.addCell(createCell("Média de Saldo Restante:", ColorConstants.WHITE).setBold());
         summaryTable.addCell(createCell(String.format("R$ %.2f", mediaSaldoRestante), ColorConstants.WHITE));
+
+        double totalRendimentosExtras = monthlyExpenses.stream()
+                .mapToDouble(MonthlySpentDtoList::rendimentosExtras)
+                .sum();
+
+        if (totalRendimentosExtras > 0) {
+            summaryTable.addCell(createCell("Total de Rendimentos Extras:", ColorConstants.WHITE).setBold());
+            summaryTable.addCell(createCell(String.format("R$ %.2f", totalRendimentosExtras), ColorConstants.WHITE));
+        }
 
         document.add(summaryTable);
     }
