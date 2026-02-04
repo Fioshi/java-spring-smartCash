@@ -130,6 +130,7 @@ public class PdfExportService {
 
         
         addTotalRow(table, monthlyExpense.total());
+        addSaldoRestanteRow(table, monthlyExpense.saldoRestante());
 
         document.add(table);
         document.add(new Paragraph("\n"));
@@ -198,6 +199,31 @@ public class PdfExportService {
                 .setPadding(8));
     }
 
+    private void addSaldoRestanteRow(Table table, double saldoRestante) {
+        DeviceRgb saldoColor = saldoRestante >= 0 ? 
+                new DeviceRgb(46, 204, 113) : 
+                new DeviceRgb(231, 76, 60);
+        
+        for (int i = 0; i < 3; i++) {
+            table.addCell(new Cell()
+                    .setBackgroundColor(saldoColor)
+                    .setBorder(null));
+        }
+
+        table.addCell(new Cell()
+                .add(new Paragraph("SALDO RESTANTE:").setBold().setFontColor(ColorConstants.WHITE))
+                .setBackgroundColor(saldoColor)
+                .setTextAlignment(TextAlignment.RIGHT)
+                .setPadding(8));
+
+        table.addCell(new Cell()
+                .add(new Paragraph(String.format("R$ %.2f", saldoRestante))
+                        .setBold()
+                        .setFontColor(ColorConstants.WHITE))
+                .setBackgroundColor(saldoColor)
+                .setPadding(8));
+    }
+
     private void addCategoryAnalysis(Document document, MonthlySpentDtoList monthlyExpense) {
         document.add(new Paragraph("Análise por Categoria")
                 .setFontSize(14)
@@ -230,6 +256,11 @@ public class PdfExportService {
                 });
 
         document.add(categoryTable);
+        
+        document.add(new Paragraph(String.format("\nSaldo Restante: R$ %.2f", monthlyExpense.saldoRestante()))
+                .setFontSize(12)
+                .setBold()
+                .setMarginTop(10));
     }
 
     private void addGeneralSummary(Document document, List<MonthlySpentDtoList> monthlyExpenses) {
@@ -281,6 +312,14 @@ public class PdfExportService {
                     String.format("%s/%d - R$ %.2f", minMonth.month(), minMonth.year(), minMonth.total()),
                     ColorConstants.WHITE));
         }
+
+        double mediaSaldoRestante = monthlyExpenses.stream()
+                .mapToDouble(MonthlySpentDtoList::saldoRestante)
+                .average()
+                .orElse(0.0);
+
+        summaryTable.addCell(createCell("Média de Saldo Restante:", ColorConstants.WHITE).setBold());
+        summaryTable.addCell(createCell(String.format("R$ %.2f", mediaSaldoRestante), ColorConstants.WHITE));
 
         document.add(summaryTable);
     }

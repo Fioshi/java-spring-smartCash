@@ -11,10 +11,11 @@ public record MonthlySpentDtoList(
         int year,
         String month,
         List<SpentDtoList> spentDtoList,
-        double total
+        double total,
+        double saldoRestante
 
 ) {
-    public MonthlySpentDtoList(MonthlyExpense monthlyExpense){
+    public MonthlySpentDtoList(MonthlyExpense monthlyExpense, double salarioMensal){
         this(
                 monthlyExpense.getYear(),
                 monthlyExpense.getMonth().toString(),
@@ -22,6 +23,7 @@ public record MonthlySpentDtoList(
                         .stream()
                         .map(SpentDtoList::new)
                         .toList(),
-                monthlyExpense.getSpents().stream().map(Spent::getValue).mapToDouble(Double::doubleValue).sum());
+                monthlyExpense.getSpents().stream().map(Spent::getValue).mapToDouble(Double::doubleValue).sum(),
+                salarioMensal - monthlyExpense.getSpents().stream().map(Spent::getValue).mapToDouble(Double::doubleValue).sum());
     }
 }

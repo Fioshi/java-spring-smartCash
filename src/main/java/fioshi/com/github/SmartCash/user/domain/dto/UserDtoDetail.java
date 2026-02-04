@@ -6,14 +6,16 @@ public record UserDtoDetail(
         String nome,
         String surname,
         String cpf,
-        String email
+        String email,
+        Double salarioMensal
 ) {
     public UserDtoDetail(User user){
         this(
                 user.getNome(),
                 user.getSurname(),
                 user.getCpf(),
-                user.getEmail()
+                user.getEmail(),
+                user.getSalarioMensal()
         );
     }
 }

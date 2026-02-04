@@ -109,19 +109,29 @@ public class SpentServiceImp implements SpentService {
 
     @Override
     public List<MonthlySpentDtoList> listMontlhySpenceFiltered(Long id) {
+        var user = userRepository.findById(id).orElseThrow(
+                () -> new BusinessException("Usuario nao encontrado"));
+        
+        double salarioMensal = user.getSalarioMensal() != null ? user.getSalarioMensal() : 0.0;
+        
         return monthlyExpenseRepository
                 .findAllByUserId(id)
                 .stream()
-                .map(MonthlySpentDtoList::new)
+                .map(monthlyExpense -> new MonthlySpentDtoList(monthlyExpense, salarioMensal))
                 .toList();
     }
 
     @Override
     @Transactional()
     public MonthlySpentDtoList getSpentResume(Long userId, Month month, int year) {
+        var user = userRepository.findById(userId).orElseThrow(
+                () -> new BusinessException("Usuario nao encontrado"));
+        
+        double salarioMensal = user.getSalarioMensal() != null ? user.getSalarioMensal() : 0.0;
+        
         var monthlyExpense = monthlyExpenseRepository.findByUserIdAndMonthAndYear(userId, month, year);
         if (monthlyExpense.isPresent())
-            return new MonthlySpentDtoList(monthlyExpense.get());
+            return new MonthlySpentDtoList(monthlyExpense.get(), salarioMensal);
         throw new BusinessException("Nao ha registros desse mes para esse usuario");
     }
 

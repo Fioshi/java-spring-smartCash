@@ -30,6 +30,8 @@ public class User {
 
     private String password;
 
+    private Double salarioMensal;
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Spent> spents;
 
@@ -39,6 +41,7 @@ public class User {
         this.cpf = dtoSignUp.cpf();
         this.email = dtoSignUp.email();
         this.password = dtoSignUp.password();
+        this.salarioMensal = dtoSignUp.salarioMensal();
     }
 
     public User(UserDtoSignUp dtoSignUp, String encodedPassword) {
@@ -47,5 +50,6 @@ public class User {
         this.cpf = dtoSignUp.cpf();
         this.email = dtoSignUp.email();
         this.password = encodedPassword;
+        this.salarioMensal = dtoSignUp.salarioMensal();
     }
 }

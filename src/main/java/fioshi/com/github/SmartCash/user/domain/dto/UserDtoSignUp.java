@@ -17,6 +17,7 @@ public record UserDtoSignUp(
         @Email
         String email,
         @NotBlank
-        String password
+        String password,
+        Double salarioMensal
 ) {
 }
