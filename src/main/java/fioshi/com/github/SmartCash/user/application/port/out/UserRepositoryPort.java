@@ -1,12 +1,18 @@
-package fioshi.com.github.SmartCash.user.repository;
+package fioshi.com.github.SmartCash.user.application.port.out;
 
 import fioshi.com.github.SmartCash.user.domain.model.User;
-import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
 
-public interface UserRepository extends JpaRepository<User, Long> {
+public interface UserRepositoryPort {
+
+    User save(User user);
+
+    Optional<User> findById(Long id);
+
     boolean existsByCpf(String cpf);
+
     boolean existsByEmail(String email);
+
     Optional<User> findByEmail(String email);
 }

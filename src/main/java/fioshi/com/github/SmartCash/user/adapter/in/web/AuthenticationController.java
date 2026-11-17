@@ -1,14 +1,16 @@
-package fioshi.com.github.SmartCash.user.controller;
+package fioshi.com.github.SmartCash.user.adapter.in.web;
 
-import fioshi.com.github.SmartCash.user.domain.dto.AuthenticationRequest;
-import fioshi.com.github.SmartCash.user.domain.dto.AuthenticationResponse;
-import fioshi.com.github.SmartCash.user.domain.dto.TokenRefreshRequest;
-import fioshi.com.github.SmartCash.user.service.AuthenticationService;
+import fioshi.com.github.SmartCash.user.adapter.in.web.dto.AuthenticationRequest;
+import fioshi.com.github.SmartCash.user.adapter.in.web.dto.AuthenticationResponse;
+import fioshi.com.github.SmartCash.user.adapter.in.web.dto.TokenRefreshRequest;
+import fioshi.com.github.SmartCash.user.application.port.in.AuthenticateUserUseCase;
+import fioshi.com.github.SmartCash.user.application.port.in.AuthenticateUserUseCase.AuthenticateUserCommand;
+import fioshi.com.github.SmartCash.user.application.port.in.RefreshTokenUseCase;
+import fioshi.com.github.SmartCash.user.application.port.in.RefreshTokenUseCase.RefreshTokenCommand;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -20,10 +22,15 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "Authentication", description = "Authentication and authorization operations")
 public class AuthenticationController {
 
-    private final AuthenticationService authenticationService;
+    private final AuthenticateUserUseCase authenticateUserUseCase;
+    private final RefreshTokenUseCase refreshTokenUseCase;
 
-    public AuthenticationController(AuthenticationService authenticationService) {
-        this.authenticationService = authenticationService;
+    public AuthenticationController(
+            AuthenticateUserUseCase authenticateUserUseCase,
+            RefreshTokenUseCase refreshTokenUseCase
+    ) {
+        this.authenticateUserUseCase = authenticateUserUseCase;
+        this.refreshTokenUseCase = refreshTokenUseCase;
     }
 
     @PostMapping(value = "/login")
@@ -31,8 +38,8 @@ public class AuthenticationController {
     @ApiResponse(responseCode = "200", description = "Authentication successful")
     @ApiResponse(responseCode = "401", description = "Invalid credentials")
     public ResponseEntity<AuthenticationResponse> login(@RequestBody @Valid AuthenticationRequest request) {
-        var response = authenticationService.authenticate(request);
-        return ResponseEntity.ok(response);
+        var result = authenticateUserUseCase.execute(new AuthenticateUserCommand(request.email(), request.password()));
+        return ResponseEntity.ok(AuthenticationResponse.from(result));
     }
 
     @PostMapping(value = "/refresh")
@@ -40,7 +47,7 @@ public class AuthenticationController {
     @ApiResponse(responseCode = "200", description = "Token refreshed successfully")
     @ApiResponse(responseCode = "401", description = "Invalid refresh token")
     public ResponseEntity<AuthenticationResponse> refreshToken(@RequestBody @Valid TokenRefreshRequest request) {
-        var response = authenticationService.refreshToken(request);
-        return ResponseEntity.ok(response);
+        var result = refreshTokenUseCase.execute(new RefreshTokenCommand(request.refreshToken()));
+        return ResponseEntity.ok(AuthenticationResponse.from(result));
     }
 }

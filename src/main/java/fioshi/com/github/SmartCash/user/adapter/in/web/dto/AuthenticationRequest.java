@@ -1,4 +1,4 @@
-package fioshi.com.github.SmartCash.user.domain.dto;
+package fioshi.com.github.SmartCash.user.adapter.in.web.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

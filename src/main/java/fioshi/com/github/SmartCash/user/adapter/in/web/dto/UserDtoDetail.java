@@ -1,4 +1,4 @@
-package fioshi.com.github.SmartCash.user.domain.dto;
+package fioshi.com.github.SmartCash.user.adapter.in.web.dto;
 
 import fioshi.com.github.SmartCash.user.domain.model.User;
 
@@ -9,7 +9,7 @@ public record UserDtoDetail(
         String email,
         Double salarioMensal
 ) {
-    public UserDtoDetail(User user){
+    public UserDtoDetail(User user) {
         this(
                 user.getNome(),
                 user.getSurname(),

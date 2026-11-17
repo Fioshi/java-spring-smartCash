@@ -1,32 +1,34 @@
-package fioshi.com.github.SmartCash.user.service.validation;
+package fioshi.com.github.SmartCash.user.application.usecase.validation;
 
 import fioshi.com.github.SmartCash.infra.exception.BusinessException;
-import fioshi.com.github.SmartCash.user.domain.dto.UserDtoSignUp;
-import fioshi.com.github.SmartCash.user.repository.UserRepository;
+import fioshi.com.github.SmartCash.user.application.port.in.SignUpUserUseCase.SignUpUserCommand;
+import fioshi.com.github.SmartCash.user.application.port.out.UserRepositoryPort;
 
-public class UserCpfValidation implements UserValidation {
+public class UserCpfValidation implements UserSignUpValidation {
 
-    private final UserRepository userRepository;
+    private final UserRepositoryPort userRepositoryPort;
 
-    public UserCpfValidation(UserRepository userRepository) {
-        this.userRepository = userRepository;
+    public UserCpfValidation(UserRepositoryPort userRepositoryPort) {
+        this.userRepositoryPort = userRepositoryPort;
     }
 
     @Override
-    public void validar(UserDtoSignUp dtoSignUp) {
-        if (userRepository.existsByCpf(dtoSignUp.cpf())) {
+    public void validate(SignUpUserCommand command) {
+        String cpf = command.cpf();
+
+        if (userRepositoryPort.existsByCpf(cpf)) {
             throw new BusinessException("O CPF deve ser único no sistema");
         }
 
-        if (dtoSignUp.cpf() == null || !dtoSignUp.cpf().matches("\\d{11}")) {
+        if (cpf == null || !cpf.matches("\\d{11}")) {
             throw new BusinessException("CPF deve conter exatamente 11 dígitos numéricos");
         }
 
-        if (dtoSignUp.cpf().chars().distinct().count() == 1) {
+        if (cpf.chars().distinct().count() == 1) {
             throw new BusinessException("CPF inválido (todos os dígitos são iguais)");
         }
 
-        int[] numeros = dtoSignUp.cpf().chars().map(c -> c - '0').toArray();
+        int[] numeros = cpf.chars().map(c -> c - '0').toArray();
 
         int dv1 = calcularDigito(numeros, 10);
         int dv2 = calcularDigito(numeros, 11);
