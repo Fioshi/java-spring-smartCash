@@ -1,8 +1,5 @@
 package fioshi.com.github.SmartCash.spent.domain.model;
 
-import lombok.Getter;
-
-@Getter
 public enum SpentCategorie {
     MORADIA("Moradia", true),
     ALIMENTACAO("Alimentação", false),
@@ -26,4 +23,11 @@ public enum SpentCategorie {
         this.isRecurring = isRecurring;
     }
 
+    public String getDescricao() {
+        return descricao;
+    }
+
+    public boolean isRecurring() {
+        return isRecurring;
+    }
 }
